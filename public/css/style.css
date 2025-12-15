@@ -1,0 +1,188 @@
+body {
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    height: 5rem;
+    background-color: white;
+}
+
+.fa-compass {
+    color: #fe424d;
+    font-size: 2rem;
+}
+
+.nav-link {
+   color: #222222 !important; 
+}
+
+/* Footer */
+.f-info-links a {
+    text-decoration: none;
+    color: #222222;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.f-info-links, 
+.f-info-socials,
+.f-info-brand {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.f-info-socials i {
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+/* .f-info {
+    text-align: center;
+    background-color: #ebebeb;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:space-evenly;
+    align-items: center;
+} */
+
+.f-info {
+    background-color: #ebebeb;
+    padding: 1.5rem 0;        /* ✅ padding instead of height */
+    display: flex;
+    flex-direction: column;  /* ✅ vertical stack */
+    align-items: center;     /* ✅ valid */
+    gap: 0.5rem;             /* ✅ spacing between rows */
+}
+
+
+/* cards */
+.listing-card {
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.card-body {
+    padding: 0 !important;
+}
+
+.card-text p {
+    font-weight: 400 !important;
+}
+
+.listing-link {
+    text-decoration: none;
+}
+
+/* card effect */
+.card-img-overlay {
+    opacity: 0;
+}
+
+.card-img-overlay:hover {
+    opacity: 0.2;
+    background-color: white;
+}
+
+/* new page */
+
+.add-btn {
+    background-color: #fe424d !important;
+    border: none !important;
+}
+
+/* edit page */
+.edit-btn {
+    background-color: #fe424d !important;
+    border: none !important;
+}
+
+/* show page */
+.show-img {
+    height: 30vh;
+}
+
+.btns {
+    display: flex;
+}
+
+.show-card {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.price-country {
+    margin-left: 10px;
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 2rem;
+}
+
+.star-rating .star {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s ease;
+}
+
+.star-rating .star:hover,
+.star-rating .star.active {
+    color: #ffc107;
+}
+
+.star-display {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.star-display i {
+    color: #ffc107;
+    margin-right: 0.2rem;
+}
+
+.star-display i.empty {
+    color: #ddd;
+}
+
+/* Toast Notifications */
+#toastContainer .toast {
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    border-radius: 8px;
+}
+
+#toastContainer .toast-body {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

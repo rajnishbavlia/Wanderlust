@@ -1,0 +1,37 @@
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+<div class="container-fluid">
+    <a class="navbar-brand" href="/"><i class="fa-regular fa-compass"></i></a>
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNavAltMarkup" 
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="navbar-nav">
+          <a class="nav-link" href="/listings">Explore</a>
+          <!-- Search form next to Explore -->
+          <form class="d-flex" role="search" action="/listings" method="get" style="margin-left: 12px;">
+            <input class="form-control" type="search" name="q" placeholder="Search listings" aria-label="Search" value="<%= typeof q !== 'undefined' ? q : '' %>" style="border-radius: 30px; width: 200px;">
+            <button class="btn btn-outline-secondary ms-2" type="submit" style="border-radius: 30px; background-color: red; color: white;">Search</button>
+          </form>
+      </div>
+
+      <div class="navbar-nav ms-auto">
+        <% if (currentUser && currentUser.role === 'admin') { %>
+          <a class="nav-link" href="/listings/pending">Pending listings</a>
+        <% } %>
+        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+        <% if (!currentUser) { %>
+          <a class="nav-link" href="/users/signup"><b>Sign Up</b></a>
+          <a class="nav-link" href="/users/login"><b>Log in</b></a>
+        <% } %>
+        <% if (currentUser) { %>
+          <a class="nav-link" href="/users/logout"><b>Logout</b></a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

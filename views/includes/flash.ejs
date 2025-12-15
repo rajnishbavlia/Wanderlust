@@ -1,0 +1,10 @@
+<!-- Toast Container -->
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x" id="toastContainer" style="z-index: 9999; max-width: 500px; margin-top: 20px;"></div>
+
+<!-- Hidden data attributes for JS to detect flash messages -->
+<% if(success && success.length) { %>
+  <div id="flashSuccess" data-message="<%= success %>" style="display:none;"></div>
+<% } %>
+<% if(error && error.length) { %>
+  <div id="flashError" data-message="<%= error %>" style="display:none;"></div>
+<% } %>

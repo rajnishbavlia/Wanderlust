@@ -1,0 +1,227 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row mt-3">
+  <div class="col-8 offset-2 d-flex align-items-center gap-2">
+    <h3 class="mb-0"><%= listing.title %></h3>
+    <% if (listing.status && listing.status !== 'approved') { %>
+      <span class="badge bg-warning text-dark text-uppercase" style="font-size: 0.75rem;"> <%= listing.status %> </span>
+    <% } %>
+  </div>
+
+  <div class="card col-6 offset-2 show-card listing-card">
+    <img 
+      src="<%= (listing.image && listing.image.url) ? listing.image.url : 'https://via.placeholder.com/800x450?text=No+image' %>" 
+      class="card-img-top show-img" 
+      alt="listing_image"
+    >
+
+    <div class="card-body">
+      <p class="card-text">
+        <%= listing.description || 'No description provided' %> <br>
+        &#8377; <%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <br>
+        <%= listing.location || 'Unknown location' %> <br>
+        <%= listing.country || 'Unknown country' %>
+      </p>
+    </div>
+  </div>
+
+  <br>
+  <div class="btns">
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <a href="/listings/<%= listing._id %>/edit" 
+         class="btn btn-dark col-1 offset-2 edit-btn mb-4">
+         Edit
+      </a>
+
+      <form class="ajax-delete listing-delete" method="post" action="/listings/<%= listing._id %>?_method=DELETE" data-listing-id="<%= listing._id %>">
+        <button class="btn btn-dark col-18 offset-8 mb-4">
+          Delete
+        </button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<div class="col-8 offset-3 mb-3">
+  <hr/>
+
+  <% if (currentUser) { %>
+    <h4>Leave a Review</h4>
+
+    <form 
+      action="/listings/<%= listing._id %>/reviews" 
+      method="post" 
+      novalidate 
+      class="needs-validation"
+    >
+    <div class="mb-3">
+      <label class="form-label">Rating</label>
+      <div class="star-rating" id="starRating">
+        <% for (let i = 1; i <= 5; i++) { %>
+          <i class="fas fa-star star" data-value="<%= i %>"></i>
+        <% } %>
+      </div>
+      <input type="hidden" id="ratingValue" name="review[rating]" value="0" required>
+      <div class="invalid-feedback">
+        Please select a rating
+      </div>
+    </div>
+
+    <div class="mb-3 mt-3">
+      <label for="comment" class="form-label">Comments</label>
+      <textarea 
+        id="comment" 
+        name="review[comment]" 
+        rows="5" 
+        class="form-control" 
+        required
+      ></textarea>
+      <div class="invalid-feedback">
+        Please add some comments for review
+      </div>
+    </div>
+
+      <button class="btn btn-dark">Submit</button>
+    </form>
+  <% } else { %>
+    <p class="text-muted">Please <a href="/users/login">login</a> to leave a review.</p>
+  <% } %>
+
+  <hr/>
+
+  <h4>All Reviews</h4>
+
+  <% for (review of listing.reviews) { %>
+  <div class="card col-5 ms-3 mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Jane doe</h5>
+      <p class="card-text"><%= review.comment %></p>
+      <div class="card-text star-display">
+        <% for (let i = 1; i <= 5; i++) { %>
+          <i class="fas fa-star <%= i <= review.rating ? 'filled' : 'empty' %>"></i>
+        <% } %>
+        <span class="ms-2">(<%= review.rating %>/5)</span>
+      </div>
+    </div>
+    <form class="mb-3 ajax-delete review-delete" method="post" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" data-review-id="<%= review._id %>"> 
+      <button class="btn btn-sm btn-dark">Delete</button>
+    </form>
+  </div>
+  <% } %>
+
+  <hr/>
+  
+  <div style="margin: 40px 0;">
+    <h3 style="font-size: 28px; font-weight: 600; margin-bottom: 24px; color: #222;">Where you'll be</h3>
+    
+    <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.12);">
+      <div id="mapbox" style="height: 500px; width: 100%; position: relative;"></div>
+      
+      <!-- Location name below map -->
+      <div style="padding: 24px; background: #fff; border-top: 1px solid #e0e0e0;">
+        <p style="margin: 0; font-size: 18px; font-weight: 600; color: #222;">
+          <%= listing.location || 'Unknown location' %>, <%= listing.country || 'Unknown country' %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<script>
+  // Initialize map
+  function setupMap() {
+    var location = '<%= listing.location || "" %>';
+    var country = '<%= listing.country || "" %>';
+    
+    if (!location || !country) return;
+    
+    var address = location + ', ' + country;
+    
+    // Fetch coordinates
+    fetch('https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(address) + '&format=json&limit=1')
+      .then(r => r.json())
+      .then(data => {
+        if (!data || !data.length) return;
+        
+        var lat = parseFloat(data[0].lat);
+        var lon = parseFloat(data[0].lon);
+        
+        loadLeaflet(lat, lon, location, country);
+      })
+      .catch(e => console.log(e));
+  }
+  
+  // Load and initialize Leaflet
+  function loadLeaflet(lat, lon, location, country) {
+    // Dynamically load Leaflet JS
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = function() {
+      initializeLeafletMap(lat, lon, location, country);
+    };
+    document.head.appendChild(script);
+  }
+  
+  // Initialize the actual map
+  function initializeLeafletMap(lat, lon, location, country) {
+    try {
+      var map = L.map('mapbox').setView([lat, lon], 13);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+      
+      // Circle area (Airbnb style)
+      L.circle([lat, lon], {
+        color: '#ff006e',
+        fill: true,
+        fillColor: '#ff006e',
+        fillOpacity: 0.12,
+        weight: 2,
+        radius: 2000
+      }).addTo(map);
+      
+      // Center marker
+      L.circleMarker([lat, lon], {
+        radius: 10,
+        fillColor: '#ff006e',
+        color: '#fff',
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 1
+      }).addTo(map)
+        .bindPopup(location + ', ' + country)
+        .openPopup();
+      
+      map.zoomControl.setPosition('bottomright');
+    } catch(e) {
+      console.error('Map error:', e);
+    }
+  }
+  
+  // Start when page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMap);
+  } else {
+    setupMap();
+  }
+</script>
+
+<style>
+  .leaflet-popup-content {
+    margin: 0 !important;
+    padding: 8px 0 !important;
+  }
+  
+  .leaflet-popup {
+    margin-bottom: 0 !important;
+  }
+  
+  #map {
+    font-family: Arial, sans-serif;
+  }
+</style>

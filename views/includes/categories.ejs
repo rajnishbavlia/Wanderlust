@@ -1,0 +1,177 @@
+<div class="categories-section" style="background: white; border-bottom: 1px solid #e0e0e0; padding: 16px 0; position: sticky; top: 80px; z-index: 100;">
+  <div class="container-fluid">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 12px;">
+      <div style="flex: 1; overflow-x: auto;">
+        <div class="categories-scroll" style="display: flex; gap: 12px; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+          <style>
+            .categories-scroll {
+              scrollbar-width: none; /* Firefox */
+            }
+            .categories-scroll::-webkit-scrollbar {
+              display: none; /* Chrome, Safari */
+            }
+            .category-tag {
+              display: inline-block;
+              padding: 8px 16px;
+              border-radius: 20px;
+              background: white;
+              border: 1px solid #ddd;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              white-space: nowrap;
+              text-decoration: none;
+              color: #222;
+              flex-shrink: 0;
+              font-size: 13px;
+              font-weight: 400;
+            }
+            .category-tag:hover {
+              border-color: #222;
+              background: #f5f5f5;
+            }
+            .category-tag.active {
+              background: #222;
+              color: white;
+              border-color: #222;
+            }
+            
+            /* Toggle Switch Styles */
+            .toggle-switch {
+              position: relative;
+              display: inline-block;
+              width: 50px;
+              height: 24px;
+              margin-left: 12px;
+            }
+            .toggle-switch input {
+              opacity: 0;
+              width: 0;
+              height: 0;
+            }
+            .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #ccc;
+              transition: 0.4s;
+              border-radius: 24px;
+            }
+            .slider:before {
+              position: absolute;
+              content: "";
+              height: 18px;
+              width: 18px;
+              left: 3px;
+              bottom: 3px;
+              background-color: white;
+              transition: 0.4s;
+              border-radius: 50%;
+            }
+            input:checked + .slider {
+              background-color: #222;
+            }
+            input:checked + .slider:before {
+              transform: translateX(26px);
+            }
+            .tax-label {
+              font-size: 13px;
+              font-weight: 500;
+              color: #222;
+              white-space: nowrap;
+            }
+          </style>
+
+          <a href="/listings" class="category-tag" data-category="all">
+            Trending
+          </a>
+
+          <a href="/listings?category=rooms" class="category-tag" data-category="rooms">
+            Rooms
+          </a>
+
+          <a href="/listings?category=iconic-cities" class="category-tag" data-category="iconic-cities">
+            Iconic Cities
+          </a>
+
+          <a href="/listings?category=mountains" class="category-tag" data-category="mountains">
+            Mountains
+          </a>
+
+          <a href="/listings?category=castles" class="category-tag" data-category="castles">
+            Castles
+          </a>
+
+          <a href="/listings?category=amazing-pools" class="category-tag" data-category="amazing-pools">
+            Amazing Pools
+          </a>
+
+          <a href="/listings?category=camping" class="category-tag" data-category="camping">
+            Camping
+          </a>
+
+          <a href="/listings?category=farms" class="category-tag" data-category="farms">
+            Farms
+          </a>
+
+          <a href="/listings?category=arctic" class="category-tag" data-category="arctic">
+            Arctic
+          </a>
+
+          <a href="/listings?category=domes" class="category-tag" data-category="domes">
+            Domes
+          </a>
+
+          <a href="/listings?category=boats" class="category-tag" data-category="boats">
+            Boats
+          </a>
+        </div>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap; margin-left: 16px;">
+        <span class="tax-label">Show Taxes</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="taxToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Handle category active state
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeCategory = urlParams.get('category') || 'all';
+    
+    const tags = document.querySelectorAll('.category-tag');
+    tags.forEach(tag => {
+      if (tag.dataset.category === activeCategory) {
+        tag.classList.add('active');
+      } else {
+        tag.classList.remove('active');
+      }
+    });
+
+    // Handle tax toggle
+    const taxToggle = document.getElementById('taxToggle');
+    const savedState = localStorage.getItem('taxToggleState') === 'true';
+    taxToggle.checked = savedState;
+    updateTaxDisplay(savedState);
+
+    taxToggle.addEventListener('change', function() {
+      localStorage.setItem('taxToggleState', this.checked);
+      updateTaxDisplay(this.checked);
+    });
+
+    function updateTaxDisplay(showTax) {
+      const taxElements = document.querySelectorAll('.tax-amount');
+      taxElements.forEach(el => {
+        el.style.display = showTax ? 'block' : 'none';
+      });
+    }
+  });
+</script>
