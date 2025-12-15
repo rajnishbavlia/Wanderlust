@@ -20,12 +20,17 @@
               <% } %>
             </div>
           </div>
-          <form action="/listings/<%= listing._id %>/approve" method="post" class="d-inline">
-            <button class="btn btn-dark btn-sm">Approve</button>
-          </form>
-          <form action="/listings/<%= listing._id %>/reject" method="post" class="d-inline ms-2">
-            <button class="btn btn-danger btn-sm">Reject</button>
-          </form>
+          <div class="d-flex align-items-center">
+            <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+              <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-primary btn-sm me-2">Edit</a>
+            <% } %>
+            <form action="/listings/<%= listing._id %>/approve" method="post" class="d-inline">
+              <button class="btn btn-dark btn-sm">Approve</button>
+            </form>
+            <form action="/listings/<%= listing._id %>/reject" method="post" class="d-inline ms-2">
+              <button class="btn btn-danger btn-sm">Reject</button>
+            </form>
+          </div>
         </div>
       <% }); %>
     </div>

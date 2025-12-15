@@ -33,6 +33,7 @@
               <label class="form-label">Option 1: Upload Image</label>
               <input 
               name="listing[image]" 
+              id="imageFile"
               type="file"
               class="form-control"
               accept="image/*"
@@ -83,3 +84,53 @@
     </form>
     </div>
 </div>  
+<div id="imageError" class="text-danger small mt-2" style="display:none;"></div>
+<script>
+    (function(){
+        const form = document.querySelector('form[method="post"][action^="/listings/"][action$="?_method=PUT"]');
+        const fileInput = document.getElementById('imageFile');
+        const urlInput = document.getElementById('imageUrl');
+        const err = document.getElementById('imageError');
+        if(!fileInput || !urlInput || !form) return;
+
+        function showError(msg){
+            err.textContent = msg;
+            err.style.display = 'block';
+        }
+        function clearError(){
+            err.textContent = '';
+            err.style.display = 'none';
+        }
+
+        fileInput.addEventListener('change', () => {
+            clearError();
+            if (fileInput.files && fileInput.files.length > 0) {
+                urlInput.value = '';
+                urlInput.disabled = true;
+            } else {
+                urlInput.disabled = false;
+            }
+        });
+
+        urlInput.addEventListener('input', () => {
+            clearError();
+            if (urlInput.value && urlInput.value.trim() !== '') {
+                fileInput.value = null;
+                fileInput.disabled = true;
+            } else {
+                fileInput.disabled = false;
+            }
+        });
+
+        form.addEventListener('submit', (e) => {
+            const hasFile = fileInput.files && fileInput.files.length > 0;
+            const hasUrl = urlInput.value && urlInput.value.trim() !== '';
+            if (hasFile && hasUrl) {
+                e.preventDefault();
+                showError('Please choose only one image source: upload OR URL.');
+                return false;
+            }
+            clearError();
+        });
+    })();
+</script>

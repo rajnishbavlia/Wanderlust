@@ -21,7 +21,7 @@
 
       <div class="navbar-nav ms-auto">
         <% if (currentUser && currentUser.role === 'admin') { %>
-          <a class="nav-link" href="/listings/pending">Pending listings</a>
+          <a class="nav-link" href="/?pending=true">Pending listings</a>
         <% } %>
         <a class="nav-link" href="/listings/new">Airbnb your home</a>
         <% if (!currentUser) { %>

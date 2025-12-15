@@ -10,6 +10,7 @@ const reviewRoutes = require('./routes/review');
 const userRoutes = require('./routes/user');
 const ExpressError = require('./utils/ExpressError');
 const Listing = require('./models/listing');
+const listingsController = require('./controllers/listings');
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
@@ -52,6 +53,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // expose current user and flash messages to all views
 app.use((req, res, next) => {
   res.locals.currentUser = req.user || null;
+  res.locals.isAdmin = req.user && req.user.role === 'admin';
   res.locals.success = req.flash ? req.flash('success') : null;
   res.locals.error = req.flash ? req.flash('error') : null;
   next();
@@ -67,7 +69,12 @@ app.use((req, res, next) => {
 // });
 
 
-app.get('/', (req, res) => res.send('Hi, I am root'));
+app.get('/', (req, res, next) => {
+  if (req.query.pending === 'true' && req.user && req.user.role === 'admin') {
+    return listingsController.pendingList(req, res, next);
+  }
+  return listingsController.index(req, res, next);
+});
 
 // mount routers
 app.use('/listings', listingRoutes);
@@ -87,11 +94,11 @@ if(process.env.NODE_ENV !== 'production'){
 
 // catch-all
 app.use((req, res, next) => next(new ExpressError(404, 'Page Not Found')));
-
+  
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = 'Something went wrong!' } = err;
   res.status(statusCode).render('error.ejs', { message: message || 'Something went wrong!' });
 });
-
+  
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

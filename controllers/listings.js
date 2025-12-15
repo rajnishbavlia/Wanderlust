@@ -34,6 +34,11 @@ module.exports = {
   createListing: async (req, res, next) => {
     try {
       const data = req.body.listing || {};
+      // Enforce mutual exclusion: either file upload or image_url, not both
+      if (req.file && data.image_url) {
+        req.flash('error', 'Please choose only one image source (file OR URL).');
+        return res.redirect('/listings/new');
+      }
       if (req.file) {
         try {
           data.image = {
@@ -118,6 +123,11 @@ module.exports = {
     try {
       const { id } = req.params;
       const updateData = req.body.listing || {};
+      // Enforce mutual exclusion for updates as well
+      if (req.file && updateData.image_url) {
+        req.flash('error', 'Please choose only one image source (file OR URL).');
+        return res.redirect(`/listings/${id}/edit`);
+      }
       // Handle Cloudinary file upload
       if (req.file) {
         updateData.image = {

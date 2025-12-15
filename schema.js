@@ -15,7 +15,10 @@ const listingSchema = Joi.object({
         price: Joi.number().min(0).required(),
         country: Joi.string().required(),
         location: Joi.string().required()
-    }).required()
+    })
+    // Allow either file-uploaded image or direct URL, but not both
+    .xor('image', 'image_url')
+    .required()
 });
 
 module.exports = { listingSchema };
